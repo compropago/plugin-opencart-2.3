@@ -7,17 +7,13 @@ use CompropagoSdk\Service;
 use CompropagoSdk\Factory\Factory;
 use CompropagoSdk\Tools\Validations;
 
-
 class ControllerExtensionPaymentCompropago extends Controller 
-{
-    
+{    
     public $client;
     public $modActive;
     public $publicKey;
     public $privateKey;
     public $execMode;
-
-
 
     public function index() 
     {
@@ -141,7 +137,7 @@ class ControllerExtensionPaymentCompropago extends Controller
              */
 
             $status_update = 1;
-            $query_update = "UPDATE ".DB_PREFIX."order SET order_status_id = $status_update WHERE order_id = $order_id";
+            $query_update = "UPDATE " . DB_PREFIX . "`order` SET order_status_id = $status_update WHERE order_id = $order_id";
             $this->db->query($query_update);
 
             $json['success'] = htmlspecialchars_decode($this->url->link('extension/payment/compropago/success', 'info_order='.base64_encode(json_encode($response)) , 'SSL'));
@@ -209,8 +205,6 @@ class ControllerExtensionPaymentCompropago extends Controller
                 $privateKey   = $this->config->get('compropago_private_key');
                 $execMode     = $this->config->get('compropago_mode') == "YES";
                 $client       = new Client($publicKey, $privateKey, $execMode);  
-                //$client = new Client("pk_test_638e8b14112423a086", "sk_test_9c95e149614142822f", false );
-                echo $publicKey . " " . $privateKey . " " . $execMode .  " this is all. ";
                 Validations::validateGateway($client);
 
             } catch (Exception $e){
@@ -231,7 +225,6 @@ class ControllerExtensionPaymentCompropago extends Controller
                 die($e->getMessage());
             }
             
-            
             $newOrder = $this->db->query("SELECT * FROM ". DB_PREFIX ."compropago_orders WHERE compropagoId = '".$response->id."'");
 
             if($newOrder->num_rows == 0){
@@ -240,25 +233,27 @@ class ControllerExtensionPaymentCompropago extends Controller
 
             $id = intval($newOrder->row['storeOrderId']);
 
-            
             switch ($response->type){
                 case 'charge.success':
                     $nameStatus = "COMPROPAGO_SUCCESS";
                     $idStoreStatus = 2;
+                    echo "Éxito: " . $response->id . " : " . $nameStatus;
                     break;
                 case 'charge.pending':
                     $nameStatus = "COMPROPAGO_PENDING";
                     $idStoreStatus = 1;
+                    echo "Éxito: " . $response->id . " :  " . $nameStatus;
                     break;
                 case 'charge.expired':
                     $nameStatus = "COMPROPAGO_EXPIRED";
                     $idStoreStatus = 14;
+                    echo "Éxito: " . $response->id . " : " . $nameStatus;
                     break;
                 default:
                     die( 'Invalid Response type');
             }
 
-            $this->db->query("UPDATE ". DB_PREFIX . "order SET order_status_id = " . $idStoreStatus . " WHERE order_id = " . $id);
+            $this->db->query("UPDATE ". DB_PREFIX . "`order` SET order_status_id = " . $idStoreStatus . " WHERE order_id = " . $id);
         } catch ( Exception $e) {
             die($e->getMessage());
         }

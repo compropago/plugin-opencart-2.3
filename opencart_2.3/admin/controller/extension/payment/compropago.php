@@ -6,8 +6,6 @@ use CompropagoSdk\Client;
 use CompropagoSdk\Service;
 use CompropagoSdk\Tools\Validations;
 
-
-
 class ControllerExtensionPaymentCompropago extends Controller
 {   
     public $privateKey;
@@ -141,7 +139,6 @@ class ControllerExtensionPaymentCompropago extends Controller
                             $server = "http://";
                         }
                         $webhook = $server . $data['compropago_webhook'];
-                        var_dump($webhook);
                         $this->setWebhook($webhook);
                     }
                 }
@@ -156,14 +153,12 @@ class ControllerExtensionPaymentCompropago extends Controller
         $data['error_private_key'] = isset($this->error['private_key']) ? $this->error['private_key'] : '';
         $data['error_public_key'] = isset($this->error['public_key']) ? $this->error['public_key'] : '';
 
-
         /**
          * Inclucion de los breadcrums en la cabecera de la vista de configuracion
          * El orden de inclucion de los breadcrums, sera el mismo al desplegarse
          * Ej: $data['breadcrums'][0] / $data['breadcrums'][1]
          */
         
-
         $data['breadcrumbs'] = array();
         $data['breadcrumbs'][] = array(
 
@@ -214,7 +209,6 @@ class ControllerExtensionPaymentCompropago extends Controller
      */
     public function setWebhook($createWebhook)
     {
-        
         $this->client->api->createWebhook($createWebhook);
     }
 
