@@ -36,6 +36,13 @@ class ControllerExtensionPaymentCompropago extends Controller
 
         # Validacion de envio de informacion de configuracion por metodo POST - existencia de llaves publica y privada
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+            if ($this->request->post['compropago_mode'] == "NO") {
+                $mode = false;
+            }else{
+                $mode = true;
+            }
+            $this->client = new Client($this->request->post['compropago_public_key'], $this->request->post['compropago_private_key'], false);
+            $this->client->api->createWebhook($this->request->post['compropago_webhook']);
             $this->model_setting_setting->editSetting('compropago', $this->request->post);
             $this->session->data['success'] = "<b>".$this->language->get('text_success'). "</b>";
             $this->response->redirect($this->url->link('extension/extension', 'token=' . $this->session->data['token'], 'SSL'));
@@ -132,14 +139,6 @@ class ControllerExtensionPaymentCompropago extends Controller
                     } else{
                         $data['hook_error']         = $hook_data[0];
                         $data['hook_error_text']    = $hook_data[1];
-                        $this->initService();
-                        if ($_SERVER['HTTPS']) {
-                            $server = "https://";
-                        }else{
-                            $server = "http://";
-                        }
-                        $webhook = $server . $data['compropago_webhook'];
-                        $this->setWebhook($webhook);
                     }
                 }
             }

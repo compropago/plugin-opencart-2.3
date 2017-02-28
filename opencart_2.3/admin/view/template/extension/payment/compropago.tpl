@@ -147,10 +147,15 @@
                                             </select>
                                         </div>
                                     <?php
+                                        if($_SERVER['HTTPS']){
+                                            $http = "https://";
+                                        }else{
+                                            $http = "http://";
+                                        }
                                         $uri = explode("admin/index.php",$_SERVER["REQUEST_URI"]);
                                         $uri = $uri[0];
                                     ?>
-                                    <input type="hidden" name="compropago_webhook" id="webhook" value="<?php echo $_SERVER['SERVER_NAME'].$uri."index.php?route=extension/payment/compropago/webhook";?>"> 
+                                    <input type="hidden" name="compropago_webhook" id="webhook" value="<?php echo $http . $_SERVER['SERVER_NAME'].$uri."index.php?route=extension/payment/compropago/webhook";?>"> 
                                     </div>
 
                                     
