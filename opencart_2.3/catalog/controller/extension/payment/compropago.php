@@ -137,7 +137,7 @@ class ControllerExtensionPaymentCompropago extends Controller
              */
 
             $status_update = 1;
-            $query_update = "UPDATE " . DB_PREFIX . "`order` SET order_status_id = $status_update WHERE order_id = $order_id";
+            $query_update = "UPDATE `" . DB_PREFIX . "order` SET order_status_id = $status_update WHERE order_id = $order_id";
             $this->db->query($query_update);
 
             $json['success'] = htmlspecialchars_decode($this->url->link('extension/payment/compropago/success', 'info_order='.base64_encode(json_encode($response)) , 'SSL'));
@@ -253,7 +253,7 @@ class ControllerExtensionPaymentCompropago extends Controller
                     die( 'Invalid Response type');
             }
 
-            $this->db->query("UPDATE ". DB_PREFIX . "`order` SET order_status_id = " . $idStoreStatus . " WHERE order_id = " . $id);
+            $this->db->query("UPDATE `". DB_PREFIX . "order` SET order_status_id = " . $idStoreStatus . " WHERE order_id = " . $id);
         } catch ( Exception $e) {
             die($e->getMessage());
         }
