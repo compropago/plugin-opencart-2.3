@@ -1,6 +1,8 @@
 
 # Plugin para Opencart 2.3.x
 
+
+
 ## Descripción
 Este modulo provee el servicio de ComproPago para poder generar intenciones de pago dentro de la plataforma Opencart.
 
