@@ -24,12 +24,15 @@ class ControllerExtensionPaymentCompropago extends Controller
         $data['continue'] = $this->url->link('extension/payment/compropago/success');
                
         $this->load->model('checkout/order');
-        $orderInfo  = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-        $limit      = $orderInfo['total'];
-        $currency   = $orderInfo['currency_code'];
+        $this->load->model('setting/setting');
+        $this->load->model('localisation/currency');
+
+        $orderInfo   = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+        $limit       = $orderInfo['total'];
+        $defCurrency = $this->config->get('config_currency');
         
         $this->initService();
-        $data['providers'] = $this->getProviders($limit, $currency);
+        $data['providers']  = $this->getProviders($limit, $defCurrency);
         $data['showLogo']   = $this->config->get('compropago_showlogo');
 
         return $this->load->view('extension/payment/compropago', $data);
@@ -70,13 +73,13 @@ class ControllerExtensionPaymentCompropago extends Controller
             }
             $this->initService();
             $orderInfo = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-            
+            $defCurrency = $this->config->get('config_currency');
             $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, "", true);
-
+            
             $params = [
                 'order_id'           => $orderInfo['order_id'],
                 'order_name'         => $orderName,
-                'order_price'        => $orderInfo['total'],
+                'order_price'        => $orderInfo['total'] * $orderInfo['currency_value'],
                 'customer_name'      => $orderInfo['payment_firstname'] . " " . $orderInfo['payment_lastname'],
                 'customer_email'     => $orderInfo['email'],
                 'payment_type'       => $this->request->post['compropagoProvider'],
