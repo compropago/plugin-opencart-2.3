@@ -1,6 +1,7 @@
 
 <link rel="stylesheet" href="vendor/assets/styles.css">
 
+
 <form class="form-horizontal">
 
         <fieldset id="payment">
@@ -17,6 +18,7 @@
                    <p>Antes de finalizar seleccione la tienda de su preferencia</p><hr>
                 </div>
             </div>
+
 
             <?php if($showLogo == 'yes') { ?>
                 <ul>
@@ -77,6 +79,7 @@
     </div>
 </div>
 
+
 <script type="text/javascript">
     $('#button-confirm').on('click', function() {
         var internal = $("input[name=compropagoProvider]:checked").val();
@@ -103,4 +106,5 @@
             }
         });
     });
+    
 </script>
