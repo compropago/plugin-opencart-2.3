@@ -32,6 +32,7 @@ class ControllerExtensionPaymentCompropago extends Controller
         $defCurrency = $this->config->get('config_currency');
         
         $this->initService();
+
         $data['providers']  = $this->getProviders($limit, $defCurrency);
         $data['showLogo']   = $this->config->get('compropago_showlogo');
 
@@ -57,6 +58,7 @@ class ControllerExtensionPaymentCompropago extends Controller
 
         $providers  = $this->client->api->listProviders( $limit, $currency_code);
         return $providers;
+
     }
 
     public function saveOrder()
@@ -72,6 +74,7 @@ class ControllerExtensionPaymentCompropago extends Controller
                 $orderName .= $product['name'];
             }
             $this->initService();
+            
             $orderInfo = $this->model_checkout_order->getOrder($this->session->data['order_id']);
             $defCurrency = $this->config->get('config_currency');
             $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, "", true);
