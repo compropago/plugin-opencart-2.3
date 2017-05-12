@@ -61,7 +61,7 @@ class ControllerExtensionPaymentCompropago extends Controller
         $data['compropago_showlogo']     = isset($this->request->data['compropago_showlogo']) ? $this->request->data['compropago_showlogo'] : $this->config->get('compropago_showlogo');
         $data['compropago_location']     = isset($this->request->data['compropago_location']) ? $this->request->data['compropago_location'] : $this->config->get('compropago_location');
         $data['compropago_webhook']      = isset($this->request->data['compropago_webhook']) ? $this->request->data['compropago_webhook'] : $this->config->get('compropago_webhook');
-        var_dump($data['compropago_mode']);
+        
         $data['compropago_order_status_new_id']     = isset($this->request->data['compropago_order_status_new_id']) ? $this->request->data['compropago_order_status_new_id'] : $this->config->get('compropago_order_status_new_id');
         $data['compropago_order_status_approve_id'] = isset($this->request->data['compropago_order_status_approve_id']) ? $this->request->data['compropago_order_status_approve_id'] : $this->config->get('compropago_order_status_approve_id');
         $data['compropago_sort_order']              = isset($this->request->data['compropago_sort_order']) ? $this->request->data['compropago_sort_order'] : $this->config->get('compropago_sort_order');
