@@ -14,6 +14,7 @@ class ControllerExtensionPaymentCompropago extends Controller
     public $publicKey;
     public $privateKey;
     public $execMode;
+    public $execLocation;
 
     public function index() 
     {
@@ -35,7 +36,8 @@ class ControllerExtensionPaymentCompropago extends Controller
 
         $data['providers']  = $this->getProviders($limit, $defCurrency);
         $data['showLogo']   = $this->config->get('compropago_showlogo');
-
+        $data['location']   = $this->config->get('compropago_location');
+        
         return $this->load->view('extension/payment/compropago', $data);
     }
 
@@ -78,6 +80,7 @@ class ControllerExtensionPaymentCompropago extends Controller
             $orderInfo = $this->model_checkout_order->getOrder($this->session->data['order_id']);
             $defCurrency = $this->config->get('config_currency');
             $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1, "", true);
+            $getProvider = (isset($this->request->post['compropagoProvider']) && !empty($this->request->post['compropagoProvider'])) ? $this->request->post['compropagoProvider'] : "SEVEN_ELEVEN";
             
             $params = [
                 'order_id'           => $orderInfo['order_id'],
@@ -85,10 +88,13 @@ class ControllerExtensionPaymentCompropago extends Controller
                 'order_price'        => $orderInfo['total'] * $orderInfo['currency_value'],
                 'customer_name'      => $orderInfo['payment_firstname'] . " " . $orderInfo['payment_lastname'],
                 'customer_email'     => $orderInfo['email'],
-                'payment_type'       => $this->request->post['compropagoProvider'],
+                'payment_type'       => $getProvider,
                 'currency'           => $orderInfo['currency_code'],
                 'app_client_name'    => 'OpenCart',
-                'app_client_version' => VERSION
+                'app_client_version' => VERSION,
+                'latitude'           => $this->request->post['compropagoLatitude'],
+                'longitude'          => $this->request->post['compropagoLongitude'],
+                'cp'                 => $orderInfo['payment_postcode']
             ];
             
             $order = Factory::getInstanceOf('PlaceOrderInfo', $params);
