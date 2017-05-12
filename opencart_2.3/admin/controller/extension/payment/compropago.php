@@ -13,6 +13,7 @@ class ControllerExtensionPaymentCompropago extends Controller
     public $execMode; # Verifica si las llaves estan en modo vivo o modo de pruebas
     public $client;
     public $createWebhook;
+    public $execLocation;
     public $modActive; # Verifica si el módulo completo esta activo
     /**
      * @var array
@@ -52,14 +53,15 @@ class ControllerExtensionPaymentCompropago extends Controller
         * Create an array with all my data and save into the database
         *   @return array;
         */
-
+        
         $data['compropago_private_key']  = isset($this->request->data['compropago_private_key']) ? $this->request->data['compropago_private_key'] : $this->config->get('compropago_private_key');
         $data['compropago_public_key']   = isset($this->request->data['compropago_public_key']) ? $this->request->data['compropago_public_key'] : $this->config->get('compropago_public_key');
         $data['compropago_mode']         = isset($this->request->data['compropago_mode']) ? $this->request->data['compropago_mode'] : $this->config->get('compropago_mode');
         $data['compropago_status']       = isset($this->request->data['compropago_status']) ? $this->request->data['compropago_status'] : $this->config->get('compropago_status'); 
         $data['compropago_showlogo']     = isset($this->request->data['compropago_showlogo']) ? $this->request->data['compropago_showlogo'] : $this->config->get('compropago_showlogo');
+        $data['compropago_location']     = isset($this->request->data['compropago_location']) ? $this->request->data['compropago_location'] : $this->config->get('compropago_location');
         $data['compropago_webhook']      = isset($this->request->data['compropago_webhook']) ? $this->request->data['compropago_webhook'] : $this->config->get('compropago_webhook');
-
+        var_dump($data['compropago_mode']);
         $data['compropago_order_status_new_id']     = isset($this->request->data['compropago_order_status_new_id']) ? $this->request->data['compropago_order_status_new_id'] : $this->config->get('compropago_order_status_new_id');
         $data['compropago_order_status_approve_id'] = isset($this->request->data['compropago_order_status_approve_id']) ? $this->request->data['compropago_order_status_approve_id'] : $this->config->get('compropago_order_status_approve_id');
         $data['compropago_sort_order']              = isset($this->request->data['compropago_sort_order']) ? $this->request->data['compropago_sort_order'] : $this->config->get('compropago_sort_order');
@@ -79,6 +81,9 @@ class ControllerExtensionPaymentCompropago extends Controller
         $data['entry_mode']                 = $this->language->get('entry_mode');
         $data['entry_select_mode_true']     = $this->language->get('entry_select_mode_true');
         $data['entry_select_mode_false']    = $this->language->get('entry_select_mode_false');
+        $data['entry_location']             = $this->language->get('entry_location');
+        $data['entry_select_location_true'] = $this->language->get('entry_select_location_true');
+        $data['entry_select_location_false']= $this->language->get('entry_select_location_false');
         $data['entry_order_status_new']     = $this->language->get('entry_order_status_new');
         $data['entry_order_status_approve'] = $this->language->get('entry_order_status_approve');
         $data['entry_status']               = $this->language->get('entry_status');
@@ -90,6 +95,7 @@ class ControllerExtensionPaymentCompropago extends Controller
         $data['help_secret_key']            = $this->language->get('help_secret_key');
         $data['help_public_key']            = $this->language->get('help_public_key');
         $data['help_mode']                  = $this->language->get('help_mode');
+        $data['help_location']              = $this->language->get('help_location');
         $data['button_save']                = $this->language->get('text_button_save');
         $data['button_cancel']              = $this->language->get('text_button_cancel');
         $data['tab_plugin_configurations']  = $this->language->get('tab_plugin_configurations');
@@ -113,6 +119,14 @@ class ControllerExtensionPaymentCompropago extends Controller
                 $this->execMode = false;
              } elseif ($data['compropago_mode'] == "SI"){
                 $this->execMode = true;
+             }
+        }
+
+        if (!empty($data['compropago_location']) && isset($data['compropago_location'])) {
+            if ($data['compropago_location'] == "NO") {
+                $this->execLocation = false;
+             } elseif ($data['compropago_location'] == "SI"){
+                $this->execLocation = true;
              }
         }
         

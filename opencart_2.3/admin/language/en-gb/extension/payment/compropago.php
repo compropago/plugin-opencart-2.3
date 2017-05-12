@@ -22,9 +22,13 @@ $_['text_success'] = 'ComproPago Plugin has been configurated.';
 $_['entry_private_key'] = 'Private Key';
 $_['entry_public_key'] = 'Public Key';
 $_['entry_mode'] = 'Active Mode';
+$_['entry_location'] = 'Active localization';
 
 $_['entry_select_mode_true'] = 'Yes';
 $_['entry_select_mode_false'] = 'No';
+
+$_['entry_select_location_true'] = 'Yes';
+$_['entry_select_location_false'] = 'No';
 
 $_['entry_order_status_new'] = 'New Order Status';
 $_['entry_order_status_approve'] = 'Approve Order Status';
@@ -52,6 +56,7 @@ $_['tab_estatus_configurations'] = "Estatus Configurations";
 $_['help_private_key'] = 'The private key you get in the settings option the ComproPago platform. www.compropago.com';
 $_['help_public_key'] = 'The public key you get in the settings option the ComproPago platform. www.compropago.com';
 $_['help_mode'] = 'Are you test? select = No';
+$_['help_location'] = 'Get the customer location to show the providers closer to him, make faster the payment notification and reduce the confirmation time.';
 
 #$_['help_db_prefix'] = "Example Prefix=oc_ => oc_compropago_transaction";
 
