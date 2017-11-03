@@ -1,5 +1,8 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once __DIR__."/../../../../vendor/autoload.php";
 
 use CompropagoSdk\Client;
@@ -35,15 +38,19 @@ class ControllerExtensionPaymentCompropago extends Controller
 
         $this->load->model('extension/payment/compropago');
 
+        $this->client = new Client($this->config->get('compropago_public_key'), $this->config->get('compropago_private_key'), $this->config->get('compropago_mode'));
         # Validacion de envio de informacion de configuracion por metodo POST - existencia de llaves publica y privada
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-            if ($this->request->post['compropago_mode'] == "NO") {
-                $mode = false;
-            }else{
-                $mode = true;
+            $mode =  $this->request->post['compropago_mode'] == "NO" ? false : true;
+            
+            try{
+                $this->client->api->createWebhook($this->request->post['compropago_webhook']);
+            } catch (\Exception $e) {
+                if ($e->getMessage() != 'Error: conflict.urls.create') {
+                    $this->error[] = $e->getMessage();
+                }
             }
-            $this->client = new Client($this->request->post['compropago_public_key'], $this->request->post['compropago_private_key'], false);
-            $this->client->api->createWebhook($this->request->post['compropago_webhook']);
+            
             $this->model_setting_setting->editSetting('compropago', $this->request->post);
             $this->session->data['success'] = "<b>".$this->language->get('text_success'). "</b>";
             $this->response->redirect($this->url->link('extension/extension', 'token=' . $this->session->data['token'], 'SSL'));
@@ -65,7 +72,6 @@ class ControllerExtensionPaymentCompropago extends Controller
         $data['compropago_order_status_new_id']     = isset($this->request->data['compropago_order_status_new_id']) ? $this->request->data['compropago_order_status_new_id'] : $this->config->get('compropago_order_status_new_id');
         $data['compropago_order_status_approve_id'] = isset($this->request->data['compropago_order_status_approve_id']) ? $this->request->data['compropago_order_status_approve_id'] : $this->config->get('compropago_order_status_approve_id');
         $data['compropago_sort_order']              = isset($this->request->data['compropago_sort_order']) ? $this->request->data['compropago_sort_order'] : $this->config->get('compropago_sort_order');
-        
 
         # Inclucion de las variables de lenguaje cargadas con $this->lenguage->load('payment/compropago') dentro del arreglo $data
         # $data sera procesado para el render de compropago.tpl
