@@ -265,10 +265,23 @@ class ControllerExtensionPaymentCompropago extends Controller
                     echo "Éxito: " . $response->id . " : " . $nameStatus;
                     break;
                 default:
-                    die( 'Invalid Response type');
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "invalid request type",
+                        "short_id" => $response->short_id,
+                        "reference" => null
+                    ]);
             }
 
             $this->db->query("UPDATE `". DB_PREFIX . "order` SET order_status_id = " . $idStoreStatus . " WHERE order_id = " . $id);
+
+            echo json_encode([
+                "status" => "success",
+                "message" => "OK",
+                "short_id" => $response->short_id,
+                "reference" => $response->order_info->order_id
+              ]);
+
         } catch ( Exception $e) {
             die($e->getMessage());
         }
