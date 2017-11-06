@@ -132,27 +132,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- SELECCIONA SI QUIERE HABILITAR LA GEOLOCALIZACION -->
-                                    <div class="form-group">
-                                        <label for="entry-location" class="col-sm-2 control-label">
-                                            <span data-toggle="tooltip" title="<?php echo $help_location; ?>">
-                                                <?php echo $entry_location; ?>
-                                            </span>
-                                        </label>
-
-                                        <div class="col-sm-10">
-                                            <select name="compropago_location" id="" class="form-control">
-                                                <?php if(!empty($compropago_location)){ ?>
-                                                    <option value="SI" <?php echo ($compropago_location == "SI") ? "selected" : ""; ?> ><?php echo $entry_select_location_true; ?></option>
-                                                    <option value="NO" <?php echo ($compropago_location == "NO") ? "selected" : ""; ?> ><?php echo $entry_select_location_false; ?></option>
-                                                <?php }else{ ?>
-                                                    <option value="SI"><?php echo $entry_select_location_true; ?></option>
-                                                    <option value="NO" selected><?php echo $entry_select_location_false; ?></option>
-                                                <?php } ?>
-                                            </select>
-                                        </div>
-                                    </div>
-
                                     <!-- SHOW LOGOS -->
                                     <div class="form-group">
                                         <label for="compropago_showlogo" class="col-sm-2 control-label"><?php echo $entry_showlogo; ?></label>
