@@ -70,15 +70,15 @@ class Service
     {
         $url = $this->client->deployUri . 'providers/';
 
-        if ($limit > 0) {
+        if (is_numeric($limit) && $limit > 0) {
             $url .= '?order_total='.$limit;
         }
 
         if ($limit > 0 && !empty($currency) && $currency != 'MXN') {
             $url .= '&currency='.$currency;
         }
-
-        $response = Request::get($url, $this->getAuth());
+        
+        $response = Request::get(htmlentities($url), $this->getAuth());
 
         return Factory::getInstanceOf('ListProviders', $response);
     }
@@ -175,7 +175,7 @@ class Service
      * Update a webhook url
      *
      * @param string $webhookId
-     * @param string $url
+     * @param string $url   
      * @param string $type (secondary | primary)
      * @return \CompropagoSdk\Factory\Models\Webhook
      * 

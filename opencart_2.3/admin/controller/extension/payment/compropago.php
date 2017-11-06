@@ -147,7 +147,7 @@ class ControllerExtensionPaymentCompropago extends Controller
         if (!empty($data['compropago_webhook']) && isset($data['compropago_webhook'])) {
             $this->createWebhook = $data['compropago_webhook'];
         }
-
+        $data['hook_error'] = false;
         if (isset($this->modActive) && !empty($this->modActive)) {
             if($this->modActive == true){
                 $hook_data = $this->hookRetro($this->modActive, $this->publicKey, $this->privateKey, $this->execMode);
@@ -157,7 +157,7 @@ class ControllerExtensionPaymentCompropago extends Controller
                         $data['hook_error_text']    = $hook_data[1];
                         $data['compropago_status']  = false;
                     } else{
-                        $data['hook_error']         = $hook_data[0];
+                        $data['hook_error']         = $hook_data[0] ? $hook_data[0] : '';
                         $data['hook_error_text']    = $hook_data[1];
                     }
                 }
