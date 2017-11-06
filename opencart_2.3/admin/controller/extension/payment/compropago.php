@@ -153,7 +153,7 @@ class ControllerExtensionPaymentCompropago extends Controller
                 $hook_data = $this->hookRetro($this->modActive, $this->publicKey, $this->privateKey, $this->execMode);
                 if ($hook_data[0]) {
                     if ($hook_data[2] == "no") {
-                        $data['hook_error']         = $hook_data[0];
+                        $data['hook_error']         = $hook_data[0] ? $hook_data[0] : '';
                         $data['hook_error_text']    = $hook_data[1];
                         $data['compropago_status']  = false;
                     } else{

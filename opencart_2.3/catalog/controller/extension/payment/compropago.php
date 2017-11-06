@@ -34,9 +34,10 @@ class ControllerExtensionPaymentCompropago extends Controller
         
         $this->initService();
 
+        $this->getProviders($limit, $defCurrency);
+
         $data['providers']  = $this->getProviders($limit, $defCurrency);
         $data['showLogo']   = $this->config->get('compropago_showlogo');
-        $data['location']   = $this->config->get('compropago_location');
         
         return $this->load->view('extension/payment/compropago', $data);
     }
@@ -45,20 +46,16 @@ class ControllerExtensionPaymentCompropago extends Controller
     {
         $this->publicKey    = $this->config->get('compropago_public_key');
         $this->privateKey   = $this->config->get('compropago_private_key');
-        $this->execMode     = $this->config->get('compropago_mode');
-        $this->client       = new Client($this->publicKey, $this->privateKey, $this->execMode);   
+        $this->execMode     = $this->config->get('compropago_mode') == 'no' || $this->config->get('compropago_mode') == 'NO' ? false : true;
+        $this->client       = new Client($this->publicKey, $this->privateKey, false);
     }
 
-    public function getProviders($limit, $currency)
+    public function getProviders($limit=0.0, $currency="MXN")
     {
-        if ($limit > 0) {
-            $limit = $limit;
-        }
-        if (isset($currency)) {
-            $currency_code = $currency;
-        }
-
-        $providers  = $this->client->api->listProviders( $limit, $currency_code);
+        
+        $isLimit = intval($limit);
+        
+        $providers  = $this->client->api->listProviders($isLimit, $currency);
         return $providers;
 
     }
@@ -92,13 +89,10 @@ class ControllerExtensionPaymentCompropago extends Controller
                 'currency'           => $orderInfo['currency_code'],
                 'app_client_name'    => 'OpenCart',
                 'app_client_version' => VERSION,
-                'latitude'           => $this->request->post['compropagoLatitude'],
-                'longitude'          => $this->request->post['compropagoLongitude'],
                 'cp'                 => $orderInfo['payment_postcode']
             ];
             
             $order = Factory::getInstanceOf('PlaceOrderInfo', $params);
-            
             try {
                 $response = $this->client->api->placeOrder($order);
             } catch (Exception $e) {
@@ -117,13 +111,12 @@ class ControllerExtensionPaymentCompropago extends Controller
             $query = str_replace(":fecha:",$recordTime,$query);
             $query = str_replace(":modified:",$recordTime,$query);
             $query = str_replace(":cpid:",$response->id,$query);
-            $query = str_replace(":cpstat:",$response->status,$query);
+            $query = str_replace(":cpstat:",$response->type,$query);
             $query = str_replace(":stcid:",$order_id,$query);
             $query = str_replace(":stoid:",$order_id,$query);
             $query = str_replace(":ste:",'COMPROPAGO_PENDING',$query);
             $query = str_replace(":ioin:",$ioIn,$query);
             $query = str_replace(":ioout:",$ioOut,$query);
-
 
             $this->db->query($query);
 
@@ -136,13 +129,12 @@ class ControllerExtensionPaymentCompropago extends Controller
             $query2 = str_replace(":orderid:",$compropagoOrderId,$query2);
             $query2 = str_replace(":fecha:",$recordTime,$query2);
             $query2 = str_replace(":cpid:",$response->id,$query2);
-            $query2 = str_replace(":cpstat:",$response->status,$query2);
-            $query2 = str_replace(":cpstatl:",$response->status,$query2);
+            $query2 = str_replace(":cpstat:",$response->type,$query2);
+            $query2 = str_replace(":cpstatl:",$response->type,$query2);
             $query2 = str_replace(":ioin:",$ioIn,$query2);
             $query2 = str_replace(":ioout:",$ioOut,$query2);
 
             $this->db->query($query2);
-
 
             /**
              * Update correct status in orders
@@ -204,9 +196,15 @@ class ControllerExtensionPaymentCompropago extends Controller
         $this->load->model('checkout/order');
 
         $request = @file_get_contents('php://input');
+        header('Content-Type: application/json');        
         
-        if(empty($request) || !$resp_webhook = Factory::getInstanceOf("CpOrderInfo",$request)){
-            die('Tipo de Request no Valido');
+        if(!$resp_webhook = Factory::getInstanceOf('CpOrderInfo', $request)){
+            echo json_encode([
+              "status" => "error",
+              "message" => "invalid request",
+              "short_id" => null,
+              "reference" => null
+            ]);
         }
 
         try
@@ -223,8 +221,13 @@ class ControllerExtensionPaymentCompropago extends Controller
                 die($e->getMessage());
             }
             
-            if($resp_webhook->id == "ch_00000-000-0000-000000"){
-                die($publicKey."Probando el WebHook?, Ruta correcta.");
+            if($resp_webhook->short_id == "000000"){
+                die(json_encode([
+                    "status" => "success",
+                    "message" => "test success",
+                    "short_id" => $resp_webhook->short_id,
+                    "reference" => null
+                ]));
             }
             
             try
