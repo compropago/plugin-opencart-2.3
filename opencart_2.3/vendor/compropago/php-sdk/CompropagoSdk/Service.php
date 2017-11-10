@@ -78,7 +78,7 @@ class Service
             $url .= '&currency='.$currency;
         }
         
-        $response = Request::get(htmlentities($url), $this->getAuth());
+        $response = Request::get($url, $this->getAuth());
 
         return Factory::getInstanceOf('ListProviders', $response);
     }
