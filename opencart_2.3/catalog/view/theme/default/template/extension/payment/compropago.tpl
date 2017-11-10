@@ -1,4 +1,3 @@
-
 <link rel="stylesheet" href="vendor/assets/styles.css">
 
 
@@ -9,18 +8,18 @@
         <section class="cpcontainer cpprovider-select">
             <div class="cprow">
                 <div class="cpcolumn">
-                    <h1>Tiendas disponibles</h1>
+                    <h1>Tiendas disponibles.</h1>
                 </div>
             </div>
 
             <div class="cprow">
                 <div class="cpcolumn">
-                   <p>Antes de finalizar seleccione la tienda de su preferencia</p><hr>
+                   <h4>Antes de finalizar seleccione la tienda de su preferencia.</h4><hr>
                 </div>
             </div>
 
 
-            <?php if($showLogo == 'yes') { ?>
+            <?php if($showLogo == 1) { ?>
                 <ul>
                     <?php foreach($providers as $provider){ ?>
                         <li>
@@ -30,24 +29,16 @@
                             </label>
                         </li>
                     <?php } ?>
-                    <?php if($location == "SI" || $location == "yes") { ?> 
-                        <input type="hidden" name="compropago_latitude" id="compropago_latitude" value="compropago_latitude">
-                        <input type="hidden" name="compropago_longitude" id="compropago_longitude" value="compropago_longitude">
-                    <?php }?> 
                 </ul>
 
 
             <?php } else { ?>
-                <select name="compropagoProvider" title="Proveedores">
+                <p>Seleccione la tienda de su preferencia de la lista que aparece abajo.</p> 
+                <select name="compropagoProvider" title="Proveedores" class="form-control">
                     <?php foreach ($providers as $provider){ ?>
                         <option value="<?php echo $provider->internal_name; ?>"> <?php echo $provider->name; ?> </option>
                     <?php } ?>
                 </select>
-                <?php if($location == "SI" || $location == "yes") { ?> 
-                    <input type="hidden" name="compropago_latitude" id="compropago_latitude" value="compropago_latitude">
-                    <input type="hidden" name="compropago_longitude" id="compropago_longitude" value="compropago_longitude">
-                <?php }?> 
-
             <?php } ?>
         </section>
 
@@ -59,7 +50,6 @@
             var providers = document.querySelectorAll(
                     ".cpcontainer.cpprovider-select ul li label img"
             );
-
             for (x = 0; x < providers.length; x++){
                 providers[x].addEventListener('click', function(){
                     cleanCpRadio();
@@ -67,7 +57,6 @@
                     document.querySelector("#"+id).checked = true;
                 });
             }
-
             function cleanCpRadio(){
                 for(y = 0; y < providers.length; y++){
                     id = providers[y].parentNode.getAttribute('for');
@@ -89,29 +78,13 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-            if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(e){
-                var latitud = e.coords.latitude;
-                var longitud = e.coords.longitude;
-                document.getElementById("compropago_latitude").value = latitud;
-                document.getElementById("compropago_longitude").value = longitud;
-            }, function(errorCode){
-                console.log("Error code localization: ");
-                console.log(errorCode);
-            });
-        }
-
     $('#button-confirm').on('click', function() {
         var internal = $("input[name=compropagoProvider]:checked").val();
-        var latitude = $("#compropago_latitude").val();
-        var longitude = $("#compropago_longitude").val();
         $.ajax({
             url: 'index.php?route=extension/payment/compropago/saveOrder',
             type: 'post',
             data: {
                 compropagoProvider: internal, 
-                compropagoLatitude: latitude, 
-                compropagoLongitude: longitude
             },
             dataType: 'json',
             beforeSend: function() {
@@ -124,7 +97,6 @@ $(document).ready(function(){
                 if (json['error']) {
                     alert(json['error']);
                 }
-
                 if (json['success']) {
                     location = json['success'];
                 }

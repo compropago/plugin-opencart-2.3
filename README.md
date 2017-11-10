@@ -1,71 +1,57 @@
-# ComproPago Plugin Opencary 2.3.x
+# Plugin para OpenCart (2.3.0.x +) 
+=================================================
+
+*Nota.-Este plugin sólo funcionará con cuentas de ComproPago generadas a partir de Agosto del 2017. Si tienes una cuenta creada anterior a esta fecha por favor utilizar la versión 1.0.2.1 del plugin.**
 
 ## Descripción
-Este módulo provee el servicio de ComproPago para poder generar órdenes de pago dentro de la plataforma de e-commerce 
-Magento. Con ComproPago puede recibir pagos en 7Eleven, Extra más tiendas en todo México.
+Este módulo permite la integración del servicio de ComproPago en tu eCommerce de OpenCart. 
 
-[Registrarse en ComproPago ] (https://compropago.com)
+Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México.
 
+[Registrarse en ComproPago ](https://compropago.com/)
 
-## Ayuda y Soporte de ComproPago
+[Comisiones](https://www.compropago.com/comisiones/)
+
+## Ayuda
+
 - [Centro de ayuda y soporte](https://compropago.com/ayuda-y-soporte)
 - [Solicitar integración](https://compropago.com/integracion)
-- [Guía para comenzar a usar ComproPago](https://compropago.com/ayuda-y-soporte/como-comenzar-a-usar-compropago)
+- [Guía para empezar a usar ComproPago](https://compropago.com/ayuda-y-soporte/como-comenzar-a-usar-compropago)
 - [Información de contacto](https://compropago.com/contacto)
 
 ## Requerimientos
+* [OpenCart 2.3.0.x +](https://www.opencart.com/)
 * [PHP >= 5.4](http://www.php.net/)
 * [PHP JSON extension](http://php.net/manual/en/book.json.php)
 * [PHP cURL extension](http://php.net/manual/en/book.curl.php)
 
-## Instalación:
-1. Copiar los directorios **admin** y **catalog** en el mismo orden, en directorio raiz de OpenCart. Asegurate de mantener la 
-   estructura en los directorios.
+## Instalación
 
-2. Copiar la carpeta vendor dentro de la raiz de opencart al nivel de las carpetas **admin** y **catalog** junto los archivos 
-   composer.json y composer.lock al mismo nivel.
-
-3. Ingresar en el panel de admistración a **Extensions > Payments** y dar click en el boton install de **Compropago Payment Method**.
-
-
-### Configurar ComproPago
-
-1. Para iniciar la configuración ir a **Extensions > Payments**. Dar click en el boton editar de **Edit Compropago**.
-
-2. Dentro de la pestaña **Plugin Configurations** cambiar **Status** a 'Enabled', ingresar las **Claves Publica y Privada** ( Si no conoce sus claves puede verificarlas dentro del panel de administracion de su cuenta en Compropago [https://compropago.com/panel/configuracion](https://compropago.com/panel/configuracion) ), Seleccionar el modo correspondiente a Pruebas o activo. El campo **Sort Order** indicara el lugar en el cual se mostrara Compropago como metodo de pago al realizar una compra, si desa que Compropago sea su metodo de pago por defecto indique **Sort Order** = 1.
-
-3. Dentro de la pestaña **Display Configurations** puede indicar la manera en la cual se mostrara la seleccion de proveedores para realización del pago.
-Para mostrar u ocultar los logos de proveedores modifique el campo **Show Logo**, puede tambien agragar una pequeña descripción del apartado con el campo **Description Service**, y por ultimo puede tambien agregar las instrucciones que desee pertinentes para la selección del proveedor en el apartado **Instructions**
-
-4. Dentro de la pestaña **Estatus Configurations** establecer **New Order status** = Processing y **Approve Order Status** = Processed.
-
-
-### ¿Cómo trabaja el módulo?
-Una vez que el cliente sabe que comprar y continúa con el proceso, seleccionará la opción de elegir el método de pago.
-Aquí aparecerá la opción de pago con ComproPago, selecciona el establecimiento de su conveniencia y el botón de **continuar**.
-
-Al completar el proceso de compra dentro de la tienda, el sistema proporcionará un recibo de pago,
-por lo que solo resta realizar el pago en el establecimiento que seleccionó anteriormente.
-
-Una vez que el cliente generó su órden de pago, dentro del panel de control de ComproPago la orden se muestra como
-"PENDIENTE". Sólo resta que el cliente realice el depósito a la brevedad posible.
+Por favor revisar la siguiente [documentación](http://demo.compropago.com/list/plugins/opencart_2.3.php)
 
 ## Documentación
 
-### ComproPago Plugin Magento
 **[API de ComproPago](https://compropago.com/documentacion/api)**
 
-ComproPago te ofrece un API tipo REST para integrar pagos en efectivo en tu comercio electrónico o tus aplicaciones.
+ComproPago te ofrece un API REST para integrar pagos en efectivo en tu comercio electrónico o aplicaciones.
 
 
 **[General](https://compropago.com/documentacion)**
 
-Información de Comisiones y Horarios, como Transferir tu dinero y la Seguridad que proporciona ComproPAgo
+Información de comisiones y horarios, como transferir tu dinero y la seguridad que proporciona ComproPago.
 
+**[Otras formas de integración](https://compropago.com/soluciones/)**
+* [Botón de pago](https://compropago.com/documentacion/boton-pago)
+* [Librerías > sección SDK](http://demo.compropago.com/)
+* [Plugins > sección Plugins](http://demo.compropago.com/)
 
-**[Herramientas](https://compropago.com/documentacion/boton-pago)**
-* Botón de pago
-* Modo de pruebas/activo
-* WebHooks
-* Librerías y Plugins
-* Shopify
+## Soporte
+
+En caso de tener alguna pregunta o requerir el apoyo técnico, por favor contactar al correo: **soporte@compropago.com**, proporcionando la siguiente información:
+
+- Nombre completo (Propietario de la cuenta).
+- Url del sitio web de la tienda.
+- Teléfono local y celular.
+- Correo electrónico del propietario de la cuenta.
+- Texto detallado de la duda o requerimiento.
+- En caso de presentar algún problema técnico, por favor enviar capturas de pantalla o evidencia para una respuesta más rápida.
