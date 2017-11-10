@@ -31,7 +31,8 @@ class ControllerExtensionPaymentCompropago extends Controller {
 			try {
 				$uri = explode("admin/index.php",$_SERVER["REQUEST_URI"]);
 				$uri = $uri[0];
-				$webhook_url = $_SERVER['SERVER_NAME'] . $uri . "index.php?route=extension/payment/compropago/webhook";
+				$protocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) ? 'https://' : 'http://';
+				$webhook_url = $protocol . $_SERVER['SERVER_NAME'] . $uri . "index.php?route=extension/payment/compropago/webhook";
 				$client = new Client($this->public_key, $this->private_key, $this->mode);
 				$client->api->createWebhook($webhook_url);
 			} catch(Exception $e) {
