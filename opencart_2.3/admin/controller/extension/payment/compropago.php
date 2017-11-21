@@ -13,7 +13,6 @@ class ControllerExtensionPaymentCompropago extends Controller
     public $execMode; # Verifica si las llaves estan en modo vivo o modo de pruebas
     public $client;
     public $createWebhook;
-    public $execLocation;
     public $modActive; # Verifica si el módulo completo esta activo
     /**
      * @var array
@@ -59,9 +58,7 @@ class ControllerExtensionPaymentCompropago extends Controller
         $data['compropago_mode']         = isset($this->request->data['compropago_mode']) ? $this->request->data['compropago_mode'] : $this->config->get('compropago_mode');
         $data['compropago_status']       = isset($this->request->data['compropago_status']) ? $this->request->data['compropago_status'] : $this->config->get('compropago_status'); 
         $data['compropago_showlogo']     = isset($this->request->data['compropago_showlogo']) ? $this->request->data['compropago_showlogo'] : $this->config->get('compropago_showlogo');
-        $data['compropago_location']     = isset($this->request->data['compropago_location']) ? $this->request->data['compropago_location'] : $this->config->get('compropago_location');
         $data['compropago_webhook']      = isset($this->request->data['compropago_webhook']) ? $this->request->data['compropago_webhook'] : $this->config->get('compropago_webhook');
-        
         $data['compropago_order_status_new_id']     = isset($this->request->data['compropago_order_status_new_id']) ? $this->request->data['compropago_order_status_new_id'] : $this->config->get('compropago_order_status_new_id');
         $data['compropago_order_status_approve_id'] = isset($this->request->data['compropago_order_status_approve_id']) ? $this->request->data['compropago_order_status_approve_id'] : $this->config->get('compropago_order_status_approve_id');
         $data['compropago_sort_order']              = isset($this->request->data['compropago_sort_order']) ? $this->request->data['compropago_sort_order'] : $this->config->get('compropago_sort_order');
@@ -121,14 +118,6 @@ class ControllerExtensionPaymentCompropago extends Controller
                 $this->execMode = true;
              }
         }
-
-        if (!empty($data['compropago_location']) && isset($data['compropago_location'])) {
-            if ($data['compropago_location'] == "NO") {
-                $this->execLocation = false;
-             } elseif ($data['compropago_location'] == "SI"){
-                $this->execLocation = true;
-             }
-        }
         
         if (!empty($data['compropago_status']) && isset($data['compropago_status'])) {
             if ($data['compropago_status'] == 0) {
@@ -141,10 +130,10 @@ class ControllerExtensionPaymentCompropago extends Controller
         if (!empty($data['compropago_webhook']) && isset($data['compropago_webhook'])) {
             $this->createWebhook = $data['compropago_webhook'];
         }
-
+        $data['hook_error'] = "";
         if (isset($this->modActive) && !empty($this->modActive)) {
             if($this->modActive == true){
-                $hook_data = $this->hookRetro($this->modActive, $this->publicKey, $this->privateKey, $this->execMode);
+                $hook_data = $this->hookRetro( $this->publicKey, $this->privateKey, $this->execMode);
                 if ($hook_data[0]) {
                     if ($hook_data[2] == "no") {
                         $data['hook_error']         = $hook_data[0];
@@ -162,9 +151,9 @@ class ControllerExtensionPaymentCompropago extends Controller
         }
         
         
-        $data['error_warning'] = isset($this->error['warning']) ?  $this->error['warning'] : '';
-        $data['error_private_key'] = isset($this->error['private_key']) ? $this->error['private_key'] : '';
-        $data['error_public_key'] = isset($this->error['public_key']) ? $this->error['public_key'] : '';
+        $data['error_warning']      = isset($this->error['warning']) ?  $this->error['warning'] : '';
+        $data['error_private_key']  = isset($this->error['private_key']) ? $this->error['private_key'] : '';
+        $data['error_public_key']   = isset($this->error['public_key']) ? $this->error['public_key'] : '';
 
         /**
          * Inclucion de los breadcrums en la cabecera de la vista de configuracion
@@ -238,59 +227,55 @@ class ControllerExtensionPaymentCompropago extends Controller
 
         return $final;
     }   
-    /**
-     * Se encarga de generar las retroalimentaciones para el usuario
-     * @return bool
-     */
 
-    public function hookRetro($enabled, $publicKey, $privateKey, $live)
-    {   
-        $error = array(false,'','yes');
-        if($enabled){
-            if(!empty($publicKey) && !empty($privateKey) ){
-                try{
-                    $client = new Client($publicKey, $privateKey, $live);
-                    $compropagoResponse = Validations::evalAuth($client);
-                    if(!Validations::validateGateway($client)){
-                        $error[1] = 'Invalid Keys, The Public Key and Private Key must be valid before using this module.';
-                        $error[0] = true;
-                    }else{
-                        if($compropagoResponse->mode_key != $compropagoResponse->livemode){
-                            $error[1] = 'Your Keys and Your ComproPago account are set to different Modes.';
-                            $error[0] = true;
-                        }else{
-                            if($live != $compropagoResponse->livemode){
-                                $error[1] = 'Your Store and Your ComproPago account are set to different Modes.';
-                                $error[0] = true;
-                            }else{
-                                if($live != $compropagoResponse->mode_key){
-                                    $error[1] = 'ComproPago ALERT:Your Keys are for a different Mode.';
-                                    $error[0] = true;
-                                }else{
-                                    if(!$compropagoResponse->mode_key && !$compropagoResponse->livemode){
-                                        $error[1] = 'WARNING: ComproPago account is Running in TEST Mode, NO REAL OPERATIONS';
-                                        $error[0] = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }catch (Exception $e) {
-                    $error[2] = "no";
-                    $error[1] = $e->getMessage();
-                    $error[0] = true;
-                }
-            }else{
-                $error[2] = true;
-                $error[1] = 'The Public Key and Private Key must be set before using ComproPago';
-                $error[0] = true;
-            }
-        }else{
-            $error[2] = true;
-            $error[1] = 'ComproPago is not Enabled';
-            $error[0] = true;
-        }
-        return $error;
+    /**
+	 * Verify some configuration errors
+	 * 
+	 * @param string $public_key
+	 * @param string $private_key
+	 * @param bool $mode
+	 * @return array
+	 * 
+	 * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
+	 */
+	private function hookRetro($public_key, $private_key, $live) {
+		$error = array(
+			false,
+			'',
+			'yes'
+		);
+		if (!empty($public_key) && !empty($private_key)) {
+			try {
+				$client = new Client($public_key, $private_key, $live);
+				$cp_response = Validations::evalAuth($client);
+								
+				if (!Validations::validateGateway($client)) {
+					$error[1] = 'Invalid Keys, The Public Key and Private Key must be valid before using this module.';
+					$error[0] = true;
+				} else if ($cp_response->mode_key != $cp_response->livemode) {
+					$error[1] = 'Your Keys and Your ComproPago account are set to different Modes.';
+					$error[0] = true;
+				} else if ($live != $cp_response->livemode) {
+					$error[1] = 'Your Store and Your ComproPago account are set to different Modes.';
+					$error[0] = true;
+				} else if ($live != $cp_response->mode_key) {
+					$error[1] = 'ComproPago ALERT:Your Keys are for a different Mode.';
+					$error[0] = true;
+				} else if (!$cp_response->mode_key && !$cp_response->livemode) {
+					$error[1] = 'WARNING: ComproPago account is Running in TEST Mode, NO REAL OPERATIONS';
+					$error[0] = true;
+				}
+			} catch (Exception $e) {
+				$error[2] = 'no';
+				$error[1] = $e->getMessage();
+				$error[0] = true;
+			}
+		} else {
+			$error[1] = 'The Public Key and Private Key must be set before using ComproPago';
+			$error[2] = 'no';
+			$error[0] = true;
+		}
+		return $error;
     }
 
     /**

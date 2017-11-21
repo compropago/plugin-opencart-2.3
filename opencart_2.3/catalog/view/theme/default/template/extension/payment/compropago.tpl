@@ -30,10 +30,6 @@
                             </label>
                         </li>
                     <?php } ?>
-                    <?php if($location == "SI" || $location == "yes") { ?> 
-                        <input type="hidden" name="compropago_latitude" id="compropago_latitude" value="compropago_latitude">
-                        <input type="hidden" name="compropago_longitude" id="compropago_longitude" value="compropago_longitude">
-                    <?php }?> 
                 </ul>
 
 
@@ -43,18 +39,9 @@
                         <option value="<?php echo $provider->internal_name; ?>"> <?php echo $provider->name; ?> </option>
                     <?php } ?>
                 </select>
-                <?php if($location == "SI" || $location == "yes") { ?> 
-                    <input type="hidden" name="compropago_latitude" id="compropago_latitude" value="compropago_latitude">
-                    <input type="hidden" name="compropago_longitude" id="compropago_longitude" value="compropago_longitude">
-                <?php }?> 
 
             <?php } ?>
         </section>
-
-        <div>
-        </div>
-
-
         <script>
             var providers = document.querySelectorAll(
                     ".cpcontainer.cpprovider-select ul li label img"
@@ -75,8 +62,6 @@
                 }
             }
         </script>
-        
-        
     </fieldset>
 </form>
 
@@ -86,32 +71,16 @@
     </div>
 </div>
 
-
 <script type="text/javascript">
 $(document).ready(function(){
-            if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(e){
-                var latitud = e.coords.latitude;
-                var longitud = e.coords.longitude;
-                document.getElementById("compropago_latitude").value = latitud;
-                document.getElementById("compropago_longitude").value = longitud;
-            }, function(errorCode){
-                console.log("Error code localization: ");
-                console.log(errorCode);
-            });
-        }
 
     $('#button-confirm').on('click', function() {
         var internal = $("input[name=compropagoProvider]:checked").val();
-        var latitude = $("#compropago_latitude").val();
-        var longitude = $("#compropago_longitude").val();
         $.ajax({
             url: 'index.php?route=extension/payment/compropago/saveOrder',
             type: 'post',
             data: {
-                compropagoProvider: internal, 
-                compropagoLatitude: latitude, 
-                compropagoLongitude: longitude
+                compropagoProvider: internal,
             },
             dataType: 'json',
             beforeSend: function() {
@@ -131,7 +100,5 @@ $(document).ready(function(){
             }
         });
     });    
-});
-    
-    
+});    
 </script>

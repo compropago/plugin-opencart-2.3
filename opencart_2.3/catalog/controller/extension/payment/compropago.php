@@ -14,7 +14,7 @@ class ControllerExtensionPaymentCompropago extends Controller
     public $publicKey;
     public $privateKey;
     public $execMode;
-    public $execLocation;
+    public $parseMode;
 
     public function index() 
     {
@@ -36,7 +36,6 @@ class ControllerExtensionPaymentCompropago extends Controller
 
         $data['providers']  = $this->getProviders($limit, $defCurrency);
         $data['showLogo']   = $this->config->get('compropago_showlogo');
-        $data['location']   = $this->config->get('compropago_location');
         
         return $this->load->view('extension/payment/compropago', $data);
     }
@@ -45,8 +44,16 @@ class ControllerExtensionPaymentCompropago extends Controller
     {
         $this->publicKey    = $this->config->get('compropago_public_key');
         $this->privateKey   = $this->config->get('compropago_private_key');
-        $this->execMode     = $this->config->get('compropago_mode');
-        $this->client       = new Client($this->publicKey, $this->privateKey, $this->execMode);   
+        $this->execMode     =  $this->config->get('compropago_mode');
+        
+        if (!empty($this->execMode) && isset($this->execMode)) {
+            if ($this->execMode == "NO") {
+                $this->parseMode = false;
+             } elseif ($this->execMode == "SI"){
+                $this->parseMode = true;
+             }
+        }
+        $this->client = new Client($this->publicKey, $this->privateKey, $this->parseMode);
     }
 
     public function getProviders($limit, $currency)
@@ -92,9 +99,6 @@ class ControllerExtensionPaymentCompropago extends Controller
                 'currency'           => $orderInfo['currency_code'],
                 'app_client_name'    => 'OpenCart',
                 'app_client_version' => VERSION,
-                'latitude'           => $this->request->post['compropagoLatitude'],
-                'longitude'          => $this->request->post['compropagoLongitude'],
-                'cp'                 => $orderInfo['payment_postcode']
             ];
             
             $order = Factory::getInstanceOf('PlaceOrderInfo', $params);
@@ -202,70 +206,98 @@ class ControllerExtensionPaymentCompropago extends Controller
     {
         $this->load->model('setting/setting');
         $this->load->model('checkout/order');
-
         $request = @file_get_contents('php://input');
+        header('Content-Type: application/json');        
         
-        if(empty($request) || !$resp_webhook = Factory::getInstanceOf("CpOrderInfo",$request)){
-            die('Tipo de Request no Valido');
+        if(!$resp_webhook = Factory::getInstanceOf('CpOrderInfo', $request)){
+            echo json_encode([
+              "status" => "error",
+              "message" => "invalid request",
+              "short_id" => null,
+              "reference" => null
+            ]);
         }
-
         try
         {
             try
             {
-                $publicKey    = $this->config->get('compropago_public_key');
-                $privateKey   = $this->config->get('compropago_private_key');
-                $execMode     = $this->config->get('compropago_mode') == "YES";
-                $client       = new Client($publicKey, $privateKey, $execMode);  
-                Validations::validateGateway($client);
-
+              $publicKey     = $this->config->get('compropago_public_key');
+              $privateKey    = $this->config->get('compropago_private_key');
+              $execMode      = $this->config->get('compropago_mode') == 'no' || $this->config->get('compropago_mode') == 'NO' ? false : true;
+              $client        = new Client($publicKey, $privateKey, $execMode);  
+              Validations::validateGateway($client);
             } catch (Exception $e){
                 die($e->getMessage());
             }
             
             if($resp_webhook->id == "ch_00000-000-0000-000000"){
-                die($publicKey."Probando el WebHook?, Ruta correcta.");
+                die(json_encode([
+                    "status" => "success",
+                    "message" => "Your test was success",
+                    "short_id" => null,
+                    "reference" => null
+                ]));
             }
             
             try
             {
                 $response = $client->api->verifyOrder($resp_webhook->id);
                 if($response->type == 'error'){
-                    die('Error procesando el numero de orden');
+                    die(json_encode([
+                        "status" => "error",
+                        "message" => "error processing your order number",
+                        "short_id" => $resp_webhook->id,
+                        "reference" => null
+                    ]));
                 }
             } catch (Exception $e){
-                die($e->getMessage());
+                die(json_encode([
+                    "status" => "error",
+                    "message" => $e->getMessage(),
+                    "short_id" => null,
+                    "reference" => null
+                ]));
             }
             
             $newOrder = $this->db->query("SELECT * FROM ". DB_PREFIX ."compropago_orders WHERE compropagoId = '".$response->id."'");
-
             if($newOrder->num_rows == 0){
-                die('El número de orden no se encontro en la tienda');
+                die(json_encode([
+                    "status" => "error",
+                    "message" => "El numero de orden no se encontro en la tienda",
+                    "short_id" => $resp_webhook->id,
+                    "reference" => null
+                ]));
             }
-
             $id = intval($newOrder->row['storeOrderId']);
-
             switch ($response->type){
                 case 'charge.success':
                     $nameStatus = "COMPROPAGO_SUCCESS";
                     $idStoreStatus = 2;
-                    echo "Éxito: " . $response->id . " : " . $nameStatus;
                     break;
                 case 'charge.pending':
                     $nameStatus = "COMPROPAGO_PENDING";
                     $idStoreStatus = 1;
-                    echo "Éxito: " . $response->id . " :  " . $nameStatus;
                     break;
                 case 'charge.expired':
                     $nameStatus = "COMPROPAGO_EXPIRED";
                     $idStoreStatus = 14;
-                    echo "Éxito: " . $response->id . " : " . $nameStatus;
                     break;
                 default:
-                    die( 'Invalid Response type');
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "invalid request type",
+                        "short_id" => $response->id,
+                        "reference" => null
+                    ]);
             }
-
             $this->db->query("UPDATE `". DB_PREFIX . "order` SET order_status_id = " . $idStoreStatus . " WHERE order_id = " . $id);
+            
+            echo json_encode([
+                "status" => "success",
+                "message" => "OK - Success",
+                "short_id" => $response->id,
+                "reference" => $response->order_info->order_id
+              ]);
         } catch ( Exception $e) {
             die($e->getMessage());
         }
