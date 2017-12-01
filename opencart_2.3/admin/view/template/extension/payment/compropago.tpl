@@ -29,7 +29,7 @@
 
         <!-- DISPLAY WARNINGS -->
         <?php if ($error_warning) { ?>
-        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i><?php echo $error_warning; ?>
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $error_warning[0]; ?>
             <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php } ?>
