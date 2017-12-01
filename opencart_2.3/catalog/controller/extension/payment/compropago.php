@@ -112,7 +112,7 @@ class ControllerExtensionPaymentCompropago extends Controller
             $recordTime = time();
             $order_id = $orderInfo['order_id'];
             $ioIn = base64_encode(json_encode($response));
-            $ioOut = base64_encode(json_encode($order));    
+            $ioOut = base64_encode(json_encode($order)); 
 
             // Creacion del query para compropago_orders
             $query = "INSERT INTO " . DB_PREFIX . "compropago_orders (`date`,`modified`,`compropagoId`,`compropagoStatus`,`storeCartId`,`storeOrderId`,`storeExtra`,`ioIn`,`ioOut`)".
@@ -132,11 +132,11 @@ class ControllerExtensionPaymentCompropago extends Controller
             $this->db->query($query);
 
             $compropagoOrderId = $this->db->getLastId();
-
+            
             $query2 = "INSERT INTO ".DB_PREFIX."compropago_transactions
             (orderId,date,compropagoId,compropagoStatus,compropagoStatusLast,ioIn,ioOut)
             values (:orderid:,:fecha:,':cpid:',':cpstat:',':cpstatl:',':ioin:',':ioout:')";
-
+            
             $query2 = str_replace(":orderid:",$compropagoOrderId,$query2);
             $query2 = str_replace(":fecha:",$recordTime,$query2);
             $query2 = str_replace(":cpid:",$response->id,$query2);

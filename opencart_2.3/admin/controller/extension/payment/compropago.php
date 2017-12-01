@@ -41,9 +41,15 @@ class ControllerExtensionPaymentCompropago extends Controller
             }else{
                 $mode = true;
             }
-            $this->client = new Client($this->request->post['compropago_public_key'], $this->request->post['compropago_private_key'], false);
-            $this->client->api->createWebhook($this->request->post['compropago_webhook']);
-            $this->model_setting_setting->editSetting('compropago', $this->request->post);
+            try{
+                $this->client = new Client($this->request->post['compropago_public_key'], $this->request->post['compropago_private_key'], $mode);
+                $this->model_setting_setting->editSetting('compropago', $this->request->post);
+                $this->client->api->createWebhook($this->request->post['compropago_webhook']);
+            } catch(Exception $e) {
+                if ($e->getMessage() != 'Error: conflict.urls.create') {
+					$retro[1] = $retro[1] == '' ? $e->getMessage() : ' - ' . $e->getMessage();
+				} 
+            }
             $this->session->data['success'] = "<b>".$this->language->get('text_success'). "</b>";
             $this->response->redirect($this->url->link('extension/extension', 'token=' . $this->session->data['token'], 'SSL'));
         }
