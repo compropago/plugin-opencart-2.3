@@ -38,7 +38,6 @@ class ControllerExtensionPaymentCompropago extends Controller {
     }
 
     $data['continue']           = $this->url->link('checkout/success');
-    $data['showLogo']           = $this->config->get('compropago_show_logos');
     $this->addBreadcrums($data);
     $this->addData($data);
     return $this->load->view('extension/payment/compropago', $data);
@@ -87,7 +86,7 @@ class ControllerExtensionPaymentCompropago extends Controller {
           try {
               $response = $this->client->api->placeOrder($order);
           } catch (Exception $e) {
-              die('This payment method is not available.') . '<br>' . $e->getMessage();
+              die('This payment method is not available.' . $e->getMessage());
           }
           $recordTime = time();
           $order_id = $orderInfo['order_id'];

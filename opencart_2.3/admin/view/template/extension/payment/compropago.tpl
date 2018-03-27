@@ -69,16 +69,6 @@
           </div>
 
           <div class="form-group">
-            <label class="col-sm-2 control-label">Show Logos</label>
-            <div class="col-sm-10">
-              <select name="compropago_show_logos" class="form-control selectpicker">
-                <option value="1" <?php if ($show_logos) { echo 'selected'; } ?>>Yes</option>
-                <option value="0" <?php if (!$show_logos) { echo 'selected'; } ?>>No</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
             <label class="col-sm-2 control-label">Providers</label>
             <div class="col-sm-5">
               <select id="deactive_providers" multiple="" class="form-control"style="height:100px;">
@@ -99,13 +89,6 @@
             </div>
 
             <input id="providers" name="compropago_providers" type="hidden" value=""/>
-          </div>
-
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Sort Order</label>
-            <div class="col-sm-10">
-              <input type="text" name="compropago_sort_order" value="<?php echo $sort_order; ?>" id="input-sort-order" class="form-control" />
-            </div>
           </div>
 
         </form>

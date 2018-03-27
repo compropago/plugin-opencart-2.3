@@ -9,7 +9,7 @@ class ModelExtensionPaymentCompropago extends Model
 
         $method_data = array(
             'code'       => 'compropago',
-            'title'      => '<img src="https://cdn.compropago.com/cp-assets/ui-compropago/logo.svg" style="height:50px;"  alt="ComproPago - Efectivo"/>',
+            'title'      => '<img src="https://compropago.com/plugins/logo.png" style="height:25px;"  alt="ComproPago - Efectivo"/> - Pago en efectivo',
             'terms'      => false,
             'sort_order' => $this->config->get('compropago_sort_order')
         );
