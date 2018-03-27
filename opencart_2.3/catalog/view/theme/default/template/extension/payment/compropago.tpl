@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="vendor/assets/styles.css">
+<link rel="stylesheet" type="text/css" href="catalog/view/theme/default/stylesheet/cppayment.css" />
 
 
 <form class="form-horizontal">
@@ -6,45 +6,30 @@
         <fieldset id="payment">
 
         <section class="cpcontainer cpprovider-select">
-            <div class="cprow">
-                <div class="cpcolumn">
-                    <h1>Tiendas disponibles.</h1>
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4 style="color:#000">¿Dónde quieres pagar?<sup>*</sup></h4>
                 </div>
             </div>
-
-            <div class="cprow">
-                <div class="cpcolumn">
-                   <h4>Antes de finalizar seleccione la tienda de su preferencia.</h4><hr>
-                </div>
-            </div>
-
-
-            <?php if($showLogo == 1) { ?>
-                <ul>
-                    <?php foreach($providers as $provider){ ?>
-                        <li>
-                            <input type="radio" id="compropago_<?php echo $provider->internal_name; ?>" name="compropagoProvider" value="<?php echo $provider->internal_name; ?>">
-                            <label for="compropago_<?php echo $provider->internal_name; ?>">
-                                <img src="<?php echo $provider->image_medium; ?>" alt="compropago_<?php echo $provider->internal_name; ?>">
-                            </label>
-                        </li>
-                    <?php } ?>
-                </ul>
-
-
-            <?php } else { ?>
-                <p>Seleccione la tienda de su preferencia de la lista que aparece abajo.</p> 
-                <select name="compropagoProvider" title="Proveedores" class="form-control">
-                    <?php foreach ($providers as $provider){ ?>
+            <div class="row">
+                <div class="col-sm-12 cpprovider-select" id="cppayment_store">
+                    <select name="compropagoProvider" title="Proveedores" class="providers_list">
+                        <?php foreach ($providers as $provider){ ?>
                         <option value="<?php echo $provider->internal_name; ?>"> <?php echo $provider->name; ?> </option>
-                    <?php } ?>
-                </select>
-            <?php } ?>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="cppayment_text">
+                    <br>
+                    <p><sup>*</sup>Comisionistas <a href="https://compropago.com/legal/corresponsales_cnbv.pdf" target="_blank">autorizados por la CNBV</a> como corresponsales bancarios.</p>
+                    </div>
+                </div>
+            </div>
+
         </section>
-
-        <div>
-        </div>
-
 
         <script>
             var providers = document.querySelectorAll(
@@ -64,8 +49,6 @@
                 }
             }
         </script>
-        
-        
     </fieldset>
 </form>
 
@@ -79,7 +62,8 @@
 <script type="text/javascript">
 $(document).ready(function(){
     $('#button-confirm').on('click', function() {
-        var internal = $("input[name=compropagoProvider]:checked").val();
+        var internal = $("select[name=compropagoProvider]").val();
+        console.log(internal);
         $.ajax({
             url: 'index.php?route=extension/payment/compropago/saveOrder',
             type: 'post',
@@ -107,3 +91,4 @@ $(document).ready(function(){
     
     
 </script>
+
